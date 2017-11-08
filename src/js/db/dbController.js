@@ -5,13 +5,20 @@ module.exports = (function () {
         dbUpdate = require('./components/dbUpdate'),
         dbDelete = require('./components/dbDelete');
 
-    var checkSet = function(){
+    var checkSetting = function(){
         if(!isSet)
             throw new Error("Initialize the database controller first!");
     };
 
+    var checkOrder = function(order){
+        if( !order.hasOwnProperty('command') ||
+            !order.hasOwnProperty('collection') ||
+            !order.hasOwnProperty('parameters') )
+                throw new Error("Invalid order, fields missing.");
+    }
+
     var getUrl = function(){
-        checkSet();
+        checkSetting();
 
         return "mongodb://" + address.toString() + ":"
         + port.toString() + "/"
@@ -31,29 +38,31 @@ module.exports = (function () {
         },
 
         setAddress: function(addr){
-            checkSet();
+            checkSetting();
             address = addr;
         },
 
         setPort: function(prt){
-            checkSet();
+            checkSetting();
             port = prt;
         },
 
         setDatabase: function(db){
-            checkSet();
+            checkSetting();
             database = db;
         },
 
         execute: async function(order){
-            var result;
+            checkOrder(order);
 
-            if(!order.hasOwnProperty('command'))
-                throw new Error("Invalid order, no command found.");
+            var result;
 
             switch(order.command){
                 case "insert":
-                    //TODO
+                    await dbInsert(order.parameters,getUrl(),order.collection.toString())
+                    .then(r => {
+                        result = r;
+                    });
                     break;
 
                 case "query":
@@ -64,11 +73,18 @@ module.exports = (function () {
                     break;
                 
                 case "delete":
-                    //TODO
+                    await dbDelete(order.parameters,getUrl(),order.collection.toString())
+                    .then(r => {
+                        result = r;
+                    });
                     break;
                 
                 case "update":
-                    //TODO
+                    await dbUpdate(order.parameters.filter, order.parameters.value,
+                                    getUrl(),order.collection.toString())
+                    .then(r => {
+                        result = r;
+                    });
                     break;
                 
                 default:
