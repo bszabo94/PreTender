@@ -5,8 +5,8 @@ var hasher = require('./hasher');
 
 var addressData = {
     postcode: null,
-    street: null,
     homenumber: null,
+    street: null,
     city: null,
     county: null,
     region: null,
@@ -30,7 +30,6 @@ var checkUsername = async function (username) {
         "username": username
     };
     var result, database;
-
 
     await mongoClient.connect(urlGetter.getURL(config.address, config.port, config.database))
         .then(db => {
@@ -97,7 +96,7 @@ var register = function (username, password, email) {
                 db.close();
             });
         } else {
-            throw new Error("Error: Username already in use.");
+            throw new Error("Error: Username '" + username + "' is already in use.");
         }
 
     })
