@@ -33,7 +33,6 @@ app.get('/user/:username', function (req, res) {
 
     getDbUrl('http://' + config.get('database-url.uri'))
         .then(url => {
-            var user = null;
             url = url.replace(/"/g, '');
             mongoClient.connect(url)
                 .then(db => {
