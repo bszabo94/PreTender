@@ -26,11 +26,6 @@ app.get('/user/:username', function (req, res) {
     var query = { username: req.params.username };
     var dbToClose;
 
-
-    mongoClient.connect("mongodb://localhost:27017/pretender_database", function (err, db) {
-        db.collection('users');
-    });
-
     getDbUrl('http://' + config.get('database-url.uri'))
         .then(url => {
             url = url.replace(/"/g, '');
@@ -43,10 +38,11 @@ app.get('/user/:username', function (req, res) {
                     return coll.findOne(query);
                 })
                 .then(result => {
+                    dbToClose.close();
                     res.status(200).json(result);
                 })
                 .catch(err => {
-                    console.log(err)
+                    dbToClose.close();
                     res.status(400).json(err.message);
                 });
         })
