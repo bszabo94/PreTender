@@ -1,6 +1,0 @@
-{
-    "database": "pretender_database",
-    "address": "localhost",
-    "port": "27017",
-    "collections": ["users", "profiles", "addresses", "tenders", "tender_types", "tender_datas"]
-}
