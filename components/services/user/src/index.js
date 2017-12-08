@@ -2,7 +2,7 @@ const config = require('./config');
 
 const express = require('express');
 const got = require('got');
-var mongoClient = require('mongodb').MongoClient;
+var mongoClient = require('mongodb');
 
 var app = express();
 app.use(express.json());
