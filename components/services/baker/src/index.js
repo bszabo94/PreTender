@@ -4,7 +4,7 @@ const cookieParser = require('cookie-parser');
 
 var app = express();
 app.use(express.json());
-app.use(cookieParser('darth plagueis'))
+app.use(cookieParser('darth plagueis'));
 
 app.get('/baker/:name', function (req, res) {
     var ck = req.signedCookies[req.params.name];
