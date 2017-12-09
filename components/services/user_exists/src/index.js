@@ -18,15 +18,15 @@ var getUser = function (username) {
         });
 };
 
-app.get('/checkuserunique/:username', function (req, res) {
+app.get('/checkuserexists/:username', function (req, res) {
     var newuser = req.params.username;
 
     getUser(newuser)
         .then(result => {
             if (JSON.parse(result.body) == null) {
-                res.status(200).json({ status: 1, message: "Username " + newuser + " is free to use." });
+                res.status(200).json({ status: 0, message: "User " + newuser + " does not exists." });
             } else {
-                res.status(200).json({ status: 0, message: "Username " + newuser + " is already taken." });
+                res.status(200).json({ status: 1, message: "User " + newuser + " exists." });
             };
         })
         .catch(err => {

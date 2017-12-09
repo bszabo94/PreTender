@@ -5,7 +5,7 @@ const config = convict({
         doc: "The service will listen on this port.",
         format: 'port',
         default: '9010',
-        ENV: 'USER_UNIQUE_CHECK_PORT'
+        ENV: 'USER_EXISTS_CHECK_PORT'
     },
     'user-url': {
         uri: {

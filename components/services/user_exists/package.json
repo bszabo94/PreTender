@@ -1,7 +1,7 @@
 {
-  "name": "@pretender/user_unique",
+  "name": "@pretender/user_exists",
   "version": "1.0.0",
-  "description": "Microserive that checks if a username is already taken at registration.",
+  "description": "Microserive that checks if a username is already in use by a user.",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
