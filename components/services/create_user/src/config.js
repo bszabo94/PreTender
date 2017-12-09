@@ -15,12 +15,12 @@ const config = convict({
             env: 'USER_GET_DATABASE_URL_URI'
         }
     },
-    'user-unique-check-url': {
+    'user-exists-check-url': {
         uri: {
-            doc: 'The URI to the User Unique Check Microservice.',
+            doc: 'The URI to the User Existence Check Microservice.',
             format: String,
             default: 'localhost:9010',
-            env: 'CREATE_USER_USER_UNIQUE_CHECK_URI'
+            env: 'CREATE_USER_USER_EXISTS_CHECK_URI'
         }
     },
     'hasher-url': {

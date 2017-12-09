@@ -48,7 +48,7 @@ var getDbUrl = function (url) {
 };
 
 var checkUsernameUnique = function (username) {
-    return got('http://' + config.get('user-unique-check-url.uri') + '/checkuserunique/' + username)
+    return got('http://' + config.get('user-exists-check-url.uri') + '/checkuserexsists/' + username)
         .then(res => {
             return res.body;
         })
@@ -84,7 +84,7 @@ app.post('/reguser', function (req, res) {
     checkUsernameUnique(req.body.username)
         .then(result => {
             var r = JSON.parse(result);
-            if (r.status == 1) {
+            if (r.status == 0) {
                 newUser.username = req.body.username;
                 newUser.password = req.body.password;
                 newUser.email = req.body.email;
@@ -125,7 +125,7 @@ app.post('/reguser', function (req, res) {
                     });
             } else {
                 res.status(200)
-                    .json({ status: 0, message: r.message });
+                    .json({ message: "Username " + req.body.username + " is already taken." });
             }
         })
         .catch(err => {
