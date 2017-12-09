@@ -4,7 +4,7 @@ const config = convict({
     port: {
         doc: "The service will listen on this port.",
         format: 'port',
-        default: '9011',
+        default: '9030',
         ENV: 'CREATE_USER_PORT'
     },
     'database-url': {
