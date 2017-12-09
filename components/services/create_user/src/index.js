@@ -62,6 +62,21 @@ var checkUsernameUnique = function (username) {
         });
 };
 
+var hashSha256 = function (text) {
+    return got('http://' + config.get('hasher-url.uri') + '/hasher/sha256/' + text)
+        .then(res => {
+            return res.body;
+        })
+        .catch(err => {
+            throw {
+                status: 404,
+                payload: {
+                    message: "Could not retrieve hashed text."
+                }
+            };
+        });
+}
+
 app.post('/reguser', function (req, res) {
 
     var dbToClose;
@@ -73,55 +88,49 @@ app.post('/reguser', function (req, res) {
                 newUser.username = req.body.username;
                 newUser.password = req.body.password;
                 newUser.email = req.body.email;
-                getDbUrl('http://' + config.get('database-url.uri'))
-                    .then(url => {
-                        url = url.replace(/"/g, '');
-                        mongoClient.connect(url)
-                            .then(db => {
-                                dbToClose = db;
-                                return db.collection('users');
-                            })
-                            .then(coll => {
-                                return coll.insertOne(newUser);
-                            })
-                            .then(insertResult => {
-                                var ir = JSON.parse(insertResult);
-                                dbToClose.close();
+                hashSha256(newUser.password)
+                    .then(hashedPW => {
+                        newUser.password = hashedPW.substr(1, hashedPW.length - 2);
+                        getDbUrl('http://' + config.get('database-url.uri'))
+                            .then(url => {
+                                url = url.replace(/"/g, '');
+                                mongoClient.connect(url)
+                                    .then(db => {
+                                        dbToClose = db;
+                                        return db.collection('users');
+                                    })
+                                    .then(coll => {
+                                        return coll.insertOne(newUser);
+                                    })
+                                    .then(insertResult => {
+                                        var ir = JSON.parse(insertResult);
+                                        dbToClose.close();
 
-                                if (ir.ok == 1) {
-                                    res.status(200).json(ir);
-                                } else {
-                                    res.status(400).json(ir);
-                                }
+                                        if (ir.ok == 1) {
+                                            res.status(200).json(ir);
+                                        } else {
+                                            res.status(400).json(ir);
+                                        }
+                                    })
+                                    .catch(err => {
+                                        res.status(400).json(err.payload.message);
+                                    });
                             })
                             .catch(err => {
-                                res.status(400).json(err.message);
-                            }
-                            );
+                                res.status(400).json(err.payload.message);
+                            });
                     })
                     .catch(err => {
-                        res.status(400).json(err.message);
+                        res.status(400).json(err.payload.message);
                     });
-
             } else {
                 res.status(200)
                     .json({ status: 0, message: r.message });
             }
-
         })
         .catch(err => {
-            res.status(400).json(err.message);
+            res.status(400).json(err.payload.message);
         });
-
-
-    // getDbUrl('http://' + config.get('database-url.uri'))
-    //     .then(url => {
-    //         url = url.replace(/"/g, '');
-    //     })
-    //     .catch(err => {
-    //         res.status(err.status)
-    //             .json(err.payload);
-    //     });
 });
 
 app.listen(config.get('port'));

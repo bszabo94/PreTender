@@ -22,6 +22,14 @@ const config = convict({
             default: 'localhost:9010',
             env: 'CREATE_USER_USER_UNIQUE_CHECK_URI'
         }
+    },
+    'hasher-url': {
+        uri: {
+            doc: 'The URI to the Hasher Utility Service.',
+            format: String,
+            default: 'localhost:9050',
+            env: 'CREATE_USER_HASHER_URI'
+        }
     }
 });
 
