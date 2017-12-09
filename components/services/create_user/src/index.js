@@ -48,7 +48,7 @@ var getDbUrl = function (url) {
 };
 
 var checkUsernameUnique = function (username) {
-    return got('http://' + config.get('user-exists-check-url.uri') + '/checkuserexsists/' + username)
+    return got('http://' + config.get('user-exists-check-url.uri') + '/checkuserexists/' + username)
         .then(res => {
             return res.body;
         })
