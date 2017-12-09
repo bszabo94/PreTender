@@ -49,8 +49,8 @@ var hashPwd = function (pwd) {
         });
 };
 
-var generateToken = function (username, passwd) {
-    return got('http://' + config.get('tokener-url.uri') + '/tokener/' + username + '/' + passwd)
+var generateToken = function (username) {
+    return got('http://' + config.get('tokener-url.uri') + '/tokener/create/' + username + '/' + 'darthsidius')
         .catch(() => {
             throw {
                 status: 400,
