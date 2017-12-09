@@ -1,0 +1,30 @@
+{
+    "services": [
+        {
+            "name": "dburl entity service",
+            "port": 9001,
+            "endpoint": "/dburl"
+        },
+        {
+            "name": "user entity service",
+            "port": 9002,
+            "endpoint": "/user/:username"
+        },
+        {
+            "name": "user existence microservice",
+            "port": 9010,
+            "endpoint": "/checkuserexists/:username"
+        },
+        {
+            "name": "user registration task service",
+            "port": 9030,
+            "endpoint": "/reguser",
+            "comment": "send a post request here with a json in the body, containing the 'username', 'password', 'email' properites"
+        },
+        {
+            "name": "hasher utility service",
+            "port": 9050,
+            "endpoint": "/hasher/:algorithm/:text"
+        }
+    ]
+}
