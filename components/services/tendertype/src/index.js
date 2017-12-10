@@ -22,9 +22,38 @@ var getDbUrl = function (url) {
         });
 };
 
-
 app.get('/tendertype', function (req, res) {
     var query = { type: req.headers.type };
+    var dbToClose;
+
+    getDbUrl('http://' + config.get('database-url.uri'))
+        .then(url => {
+            url = url.replace(/"/g, '');
+            mongoClient.connect(url)
+                .then(db => {
+                    dbToClose = db;
+                    return db.collection('tenderTypes');
+                })
+                .then(coll => {
+                    return coll.findOne(query);
+                })
+                .then(result => {
+                    dbToClose.close();
+                    res.status(200).json(result);
+                })
+                .catch(err => {
+                    dbToClose.close();
+                    res.status(400).json(err.message);
+                });
+        })
+        .catch(err => {
+            res.status(err.status)
+                .json(err.payload);
+        });
+});
+
+app.get('/tendertype/:id', function (req, res) {
+    var query = { _id: req.params.id };
     var dbToClose;
 
     getDbUrl('http://' + config.get('database-url.uri'))
