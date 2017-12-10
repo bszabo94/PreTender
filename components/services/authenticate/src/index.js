@@ -55,7 +55,7 @@ app.get('/auth', function (req, res) {
                     .then(check => {
                         if (check) {
                             res.status(200)
-                                .json({ status: 1, message: "Authorization OK." });
+                                .json({ status: 1, message: "Authorization OK.", user: user });
                         } else {
                             res.status(401)
                                 .json({ status: 0, message: "Authorization required." });
