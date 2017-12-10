@@ -9,7 +9,7 @@ app.use(cookieParser('darth plagueis'));
 app.get('/baker/:name', function (req, res) {
     var ck = req.signedCookies[req.params.name];
     if (ck === undefined) {
-        res.status(400)
+        res.status(200)
             .json({ status: 0, message: "Cookie not found." });
     } else {
         res.status(200)

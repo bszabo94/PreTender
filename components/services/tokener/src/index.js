@@ -12,8 +12,13 @@ app.get('/tokener/create/:username/:passwd', function (req, res) {
         });
 });
 
-app.get('/tokener/read/:token', function (req, res) {
-    var token = req.params.token;
+app.get('/tokener/read', function (req, res) {
+    if (req.headers.token === undefined)
+        res.status(400)
+            .json("No token Found");
+
+
+    var token = req.headers.token;
     jwt.verify(token, 'darthsidius', function (err, decode) {
         if (err) {
             res.status(400)
