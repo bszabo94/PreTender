@@ -19,7 +19,7 @@ app.get('/baker/:name', function (req, res) {
 
 app.post('/baker/:name/:value', function (req, res) {
     var options = {
-        maxAge: 1000 * 60 * 30,
+        maxAge: 1000 * 60 * 60 * 24,
         httpOnly: true,
         signed: true
     }
