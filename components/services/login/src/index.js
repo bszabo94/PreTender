@@ -90,11 +90,12 @@ app.get('/login/:username/:passwd', function (req, res) {
                                 if (hashedPW == userpwd) {
                                     generateToken(username, passwd)
                                         .then(token => {
-                                            token = JSON.parse(token.body);
+                                            token = JSON.parse(token.body).token;
+                                            token = token.substr(1, token.length - 2);
                                             storeCookie("_ujwt", token)
                                                 .then(resp => {
                                                     res.setHeader('set-cookie', resp.headers["set-cookie"]);
-                                                    res.status(200).send("ok");
+                                                    res.status(200).json(token);
                                                 })
                                                 .catch(err => {
                                                     throw err;
