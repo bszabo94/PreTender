@@ -17,7 +17,7 @@ const config = convict({
         'database-name': {
             doc: 'The name of the database.',
             format: String,
-            default: 'pretender_database',
+            default: 'pretender',
             env: 'DATABASE_NAME'
         },
         collections: {
