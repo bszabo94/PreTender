@@ -17,21 +17,6 @@ var newApplication = {
     "data": null
 };
 
-var getDbUrl = function (url) {
-    return got(url + '/dburl')
-        .then(res => {
-            return res.body;
-        })
-        .catch(err => {
-            throw {
-                status: 404,
-                payload: {
-                    message: "Could not retrieve database information."
-                }
-            };
-        });
-};
-
 var checkUserExists = function (username) {
     return got('http://' + config.get('user-exists-check-url.uri') + '/checkuserexists/' + username)
         .then(resp => {

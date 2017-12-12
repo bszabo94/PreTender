@@ -7,12 +7,11 @@ const config = convict({
         default: '9004',
         ENV: 'ISSUED_TENDER_PORT'
     },
-    'database-url': {
-        uri: {
-            doc: 'The URI to the Database Url Service.',
+    'database': {
+        url: {
+            doc: 'Address of the database.',
             format: String,
-            default: 'localhost:9001',
-            env: 'ISSUED_TENDER_GET_DATABASE_URL_URI'
+            default: 'mongodb://127.0.0.1:27017/pretender',
         }
     }
 });

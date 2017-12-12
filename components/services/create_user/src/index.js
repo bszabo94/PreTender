@@ -34,21 +34,6 @@ var newUser =
 
     };
 
-var getDbUrl = function (url) {
-    return got(url + '/dburl')
-        .then(res => {
-            return res.body;
-        })
-        .catch(err => {
-            throw {
-                status: 404,
-                payload: {
-                    message: "Could not retrieve database information."
-                }
-            };
-        });
-};
-
 var checkUsernameUnique = function (username) {
     return got('http://' + config.get('user-exists-check-url.uri') + '/checkuserexists/' + username)
         .then(res => {
@@ -93,30 +78,23 @@ app.post('/reguser', function (req, res) {
                 hashSha256(newUser.password)
                     .then(hashedPW => {
                         newUser.password = hashedPW.substr(1, hashedPW.length - 2);
-                        getDbUrl('http://' + config.get('database-url.uri'))
-                            .then(url => {
-                                url = url.replace(/"/g, '');
-                                mongoClient.connect(url)
-                                    .then(db => {
-                                        dbToClose = db;
-                                        return db.collection('users');
-                                    })
-                                    .then(coll => {
-                                        return coll.insertOne(newUser);
-                                    })
-                                    .then(insertResult => {
-                                        var ir = JSON.parse(insertResult);
-                                        dbToClose.close();
+                        mongoClient.connect(config.get('database.url'))
+                            .then(db => {
+                                dbToClose = db;
+                                return db.collection('users');
+                            })
+                            .then(coll => {
+                                return coll.insertOne(newUser);
+                            })
+                            .then(insertResult => {
+                                var ir = JSON.parse(insertResult);
+                                dbToClose.close();
 
-                                        if (ir.ok == 1) {
-                                            res.status(200).json(ir);
-                                        } else {
-                                            res.status(400).json(ir);
-                                        }
-                                    })
-                                    .catch(err => {
-                                        res.status(400).json(err.payload.message);
-                                    });
+                                if (ir.ok == 1) {
+                                    res.status(200).json(ir);
+                                } else {
+                                    res.status(400).json(ir);
+                                }
                             })
                             .catch(err => {
                                 res.status(400).json(err.payload.message);
