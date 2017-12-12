@@ -89,7 +89,6 @@ var getIssuedtender = function (id) {
 var modUser = function (username, query) {
     return got.post('http://' + config.get('user-url.uri') + '/user/' + username, { json: true, body: query })
         .catch(err => {
-            console.log(err)
             throw {
                 status: 400,
                 payload: {
@@ -102,7 +101,6 @@ var modUser = function (username, query) {
 var saveApplication = function (application) {
     return got.post('http://' + config.get('save-application-url.uri') + '/saveapplication', { json: true, body: application })
         .catch(err => {
-            // console.log(err);
             throw {
                 status: 400,
                 payload: {
@@ -154,43 +152,33 @@ app.post('/applytender/:username/:issuedtenderid', function (req, res) {
                                     .then(result => {
 
                                         var appID = result.body.insertedId;
-                                        // console.log(appID);
 
                                         var query = {
                                             $push: {
                                                 tenders: appID
                                             }
                                         };
-
-                                        // query = JSON.parse(JSON.stringify(query));
-                                        console.log(query);
-
                                         modUser(username, query)
                                             .then(result => {
-                                                console.log("DBG3")
-                                                if (result.modifiedCount == 1) {
+                                                if (result.body.nModified == 1) {
                                                     res.status(200)
                                                         .json("Tender succesfully applied.");
                                                 } else {
-                                                    console.log("WAAAT")
                                                     res.status(400)
                                                         .json("Something went wrong. Apply unsuccesful.");
                                                 }
                                             })
                                             .catch(err => {
-                                                // console.log(err);
                                                 res.status(400)
                                                     .json(err.message);
                                             });
                                     })
                                     .catch(err => {
-                                        // console.log(err)
                                         res.status(400)
                                             .json(err.message);
                                     });
                             })
                             .catch(err => {
-                                // console.log(err)
                                 res.status(400)
                                     .json(err.message);
                             });
