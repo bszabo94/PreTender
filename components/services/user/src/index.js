@@ -89,7 +89,8 @@ app.post('/user/:username', function (req, res) {
                                     return db.collection('users');
                                 })
                                 .then(coll => {
-                                    return coll.updateOne({ "username": req.params.username }, { query });
+                                    var filterquery = { "username": req.params.username };
+                                    return coll.updateOne(filterquery, query);
                                 })
                                 .then(result => {
                                     dbToClose.close();
@@ -97,7 +98,6 @@ app.post('/user/:username', function (req, res) {
                                 })
                                 .catch(err => {
                                     dbToClose.close();
-                                    console.log(err);
                                     res.status(400).json(err.message);
                                 });
                         })
