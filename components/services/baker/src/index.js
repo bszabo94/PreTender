@@ -1,9 +1,11 @@
 const config = require('./config');
 const express = require('express');
 const cookieParser = require('cookie-parser');
+var cors = require('cors');
 
 var app = express();
 app.use(express.json());
+app.use(cors());
 app.use(cookieParser('darth plagueis'));
 
 app.get('/baker/:name', function (req, res) {

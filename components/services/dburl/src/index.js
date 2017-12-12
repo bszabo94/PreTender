@@ -1,8 +1,10 @@
 const express = require('express');
 const config = require('./config');
+var cors = require('cors');
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 
 app.get('/dburl', function (req, res) {

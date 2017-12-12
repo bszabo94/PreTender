@@ -1,9 +1,11 @@
 const config = require('./config');
 const express = require('express');
 const jwt = require('jsonwebtoken');
+var cors = require('cors');
 
 var app = express();
 app.use(express.json());
+app.use(cors());
 
 app.get('/tokener/create/:username/:passwd', function (req, res) {
     res.status(200)

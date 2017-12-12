@@ -1,6 +1,7 @@
 const config = require('./config');
 const express = require('express');
 var crypto = require('crypto');
+var cors = require('cors');
 
 var validAlgorithms = ["sha256", "md5"];
 const INPUT_ENCODING = "utf-8";
@@ -13,6 +14,7 @@ var createHash = function (text, algorithm) {
 
 var app = express();
 app.use(express.json());
+app.use(cors());
 
 app.get('/hasher/:algorithm/:text', function (req, res) {
     var text = req.params.text,

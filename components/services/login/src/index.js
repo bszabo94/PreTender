@@ -2,9 +2,11 @@ const config = require('./config');
 
 const express = require('express');
 const got = require('got');
+var cors = require('cors');
 
 var app = express();
 app.use(express.json());
+app.use(cors());
 
 var checkUserExists = function (username) {
     return got('http://' + config.get('user-exists-check-url.uri') + '/checkuserexists/' + username)

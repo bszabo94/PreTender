@@ -2,11 +2,13 @@ const config = require('./config');
 
 const express = require('express');
 const got = require('got');
+var cors = require('cors');
 var mongoClient = require('mongodb'),
     oid = require('mongodb').ObjectId;
 
 var app = express();
 app.use(express.json());
+app.use(cors());
 
 var getDbUrl = function (url) {
     return got(url + '/dburl')
