@@ -1,0 +1,19 @@
+{
+  "name": "@pretender/finalizeapplication",
+  "version": "1.0.0",
+  "description": "Finalize Application Task Service",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Bence Szabó",
+  "license": "MIT",
+  "dependencies": {
+    "convict": "^4.0.2",
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "got": "^8.0.1",
+    "mongodb": "^2.2.33"
+  }
+}
