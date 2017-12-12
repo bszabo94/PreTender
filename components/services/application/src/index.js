@@ -1,12 +1,12 @@
 const config = require('./config');
 
-const express = require('express');
-const got = require('got');
-var cors = require('cors');
-var mongoClient = require('mongodb'),
-    oid = require('mongodb').ObjectId;
+const express = require('express'),
+    got = require('got'),
+    cors = require('cors'),
+    mongoClient = require('mongodb'),
+    oid = require('mongodb').ObjectId,
+    app = express();
 
-var app = express();
 app.use(express.json());
 app.use(cors());
 
@@ -76,12 +76,14 @@ app.delete('/application/:id', function (req, res) {
         })
         .then(result => {
             dbToClose.close();
-            res.status(200).json(result);
+            res.status(200)
+                .json(result);
         })
         .catch(err => {
-            console.log(err);
             dbToClose.close();
-            res.status(400).json(err.message);
+            // console.error(err);
+            res.status(400)
+                .json(err.message);
         });
 });
 

@@ -75,7 +75,7 @@ var storeCookie = function (ckName, ckVal) {
         });
 }
 
-app.get('/login/:username/:passwd', function (req, res) {
+app.post('/login/:username/:passwd', function (req, res) {
     var username = req.params.username,
         passwd = req.params.passwd;
 
@@ -96,7 +96,7 @@ app.get('/login/:username/:passwd', function (req, res) {
                                             storeCookie("_ujwt", token)
                                                 .then(resp => {
                                                     res.setHeader('set-cookie', resp.headers["set-cookie"]);
-                                                    res.status(200).json(token);
+                                                    res.status(200).json({ status: 1, message: "Login succesful." });
                                                 })
                                                 .catch(err => {
                                                     throw err;

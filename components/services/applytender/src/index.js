@@ -149,7 +149,7 @@ app.post('/applytender/:username/:issuedtenderid', function (req, res) {
                                             .then(result => {
                                                 if (result.body.nModified == 1) {
                                                     res.status(200)
-                                                        .json("Tender succesfully applied.");
+                                                        .json({ status: 1, message: "Tender succesfully applied." });
                                                 } else {
                                                     res.status(400)
                                                         .json("Something went wrong. Apply unsuccesful.");
