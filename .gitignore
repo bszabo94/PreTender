@@ -1,2 +1,5 @@
 # Dependency directories
 node_modules/
+
+# Deprecated services and files
+deprecated/
