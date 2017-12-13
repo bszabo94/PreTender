@@ -35,15 +35,20 @@ var newUser =
     };
 
 var checkUsernameUnique = function (username) {
-    return got('http://' + config.get('user-exists-check-url.uri') + '/checkuserexists/' + username)
+    return got('http://' + config.get('user-url.uri') + '/user/' + username)
         .then(res => {
-            return res.body;
+            if (JSON.parse(res.body) != null) {
+                return true;
+            } else {
+                return false;
+            }
         })
         .catch(err => {
+            console.log(err);
             throw {
                 status: 404,
                 payload: {
-                    message: "Could not retrieve database information."
+                    message: "Could not retrieve user information."
                 }
             };
         });
@@ -55,6 +60,7 @@ var hashSha256 = function (text) {
             return res.body;
         })
         .catch(err => {
+            console.log(err);
             throw {
                 status: 404,
                 payload: {
@@ -69,9 +75,8 @@ app.post('/reguser', function (req, res) {
     var dbToClose;
 
     checkUsernameUnique(req.body.username)
-        .then(result => {
-            var r = JSON.parse(result);
-            if (r.status == 0) {
+        .then(userExists => {
+            if (!userExists) {
                 newUser.username = req.body.username;
                 newUser.password = req.body.password;
                 newUser.email = req.body.email;

@@ -14,20 +14,18 @@ const config = convict({
             default: 'mongodb://127.0.0.1:27017/pretender',
         }
     },
-    'user-exists-check-url': {
-        uri: {
-            doc: 'The URI to the User Existence Check Microservice.',
-            format: String,
-            default: 'localhost:9010',
-            env: 'CREATE_USER_USER_EXISTS_CHECK_URI'
-        }
-    },
     'hasher-url': {
         uri: {
             doc: 'The URI to the Hasher Utility Service.',
             format: String,
             default: 'localhost:9050',
-            env: 'CREATE_USER_HASHER_URI'
+        }
+    },
+    'user-url': {
+        uri: {
+            doc: 'The URI to the User Entity Service.',
+            format: String,
+            default: 'localhost:9002'
         }
     }
 });

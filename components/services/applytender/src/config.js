@@ -31,14 +31,6 @@ const config = convict({
             env: 'APPLY_TENDER_ISSUED_TENDER_URI'
         }
     },
-    'user-exists-check-url': {
-        uri: {
-            doc: 'The URI to the User Existence Check Microservice.',
-            format: String,
-            default: 'localhost:9010',
-            env: 'APPLY_TENDER_USER_EXISTS_CHECK_URI'
-        }
-    },
     'save-application-url': {
         uri: {
             doc: 'The URI to the Save Application Microservice.',

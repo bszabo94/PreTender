@@ -18,10 +18,10 @@ var newApplication = {
 };
 
 var checkUserExists = function (username) {
-    return got('http://' + config.get('user-exists-check-url.uri') + '/checkuserexists/' + username)
+    return got('http://' + config.get('user-url.uri') + '/user/' + username)
         .then(resp => {
 
-            if (JSON.parse(resp.body).status) {
+            if (JSON.parse(resp.body) != null) {
                 return true;
             } else {
                 return false;

@@ -4,20 +4,20 @@ const config = convict({
     port: {
         doc: "The service will listen on this port.",
         format: 'port',
-        default: '9032',
+        default: '9032'
     },
     'tokener-url': {
         uri: {
             doc: 'The URI to the Tokener Microservice.',
             format: String,
-            default: 'localhost:9011',
+            default: 'localhost:9011'
         }
     },
-    'user-exists-check-url': {
+    'user-url': {
         uri: {
-            doc: 'The URI to the User Existence Check Microservice.',
+            doc: 'The URI to the User Entity Service.',
             format: String,
-            default: 'localhost:9010',
+            default: 'localhost:9002'
         }
     }
 });
