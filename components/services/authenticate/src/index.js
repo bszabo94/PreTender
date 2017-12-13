@@ -11,55 +11,41 @@ app.use(cors());
 app.use(cookieParser('darth plagueis'));
 
 var readToken = function (token) {
-    return got('http://' + config.get('tokener-url.uri') + '/tokener/read', { headers: { 'token': token } })
+    return got('http://' + config.get('tokener.url') + '/tokener/read', { headers: { 'token': token } })
         .then(res => {
             return res.body;
         })
-        .catch(() => {
-            throw {
-                status: 400,
-                payload: {
-                    message: "Could not read token."
-                }
-            };
+        .catch(err => {
+            throw err;
         });
 };
 
 var checkUserExists = function (username) {
-    return got('http://' + config.get('user-url.uri') + '/user/' + username)
+    return got('http://' + config.get('user.url') + '/user/' + username)
         .then(resp => {
-            if (JSON.parse(resp.body) != null) {
-                return true;
-            } else {
-                return false;
-            }
+            return JSON.parse(resp.body) != null;
         })
-        .catch(() => {
-            throw {
-                status: 400,
-                payload: {
-                    message: "Could not use user-exist service."
-                }
-            }
+        .catch(err => {
+            throw err;
         });
 };
 
 app.get('/auth', function (req, res) {
-    var ck = req.signedCookies["_ujwt"];
+    var ck = req.signedCookies["_ujwt"], user;
     if (ck === undefined) {
-        res.status(401)
+        res.status(403)
             .json({ status: 0, message: "Authorization required." });
     } else {
         readToken(ck)
             .then(token => {
-                var user = JSON.parse(token)["username"];
+                user = JSON.parse(token)["username"];
                 checkUserExists(user)
                     .then(check => {
                         if (check) {
                             res.status(200)
                                 .json({ status: 1, message: "Authorization OK.", user: user });
                         } else {
-                            res.status(401)
+                            res.status(403)
                                 .json({ status: 0, message: "Authorization required." });
                         }
                     })
@@ -68,10 +54,8 @@ app.get('/auth', function (req, res) {
                     });
             })
             .catch(err => {
-                console.log(err);
-                res.status(400).json();
-                // res.status(err.status)
-                //     .json(err.payload);
+                res.status(404)
+                    .json(err.message);
             });
     }
 });

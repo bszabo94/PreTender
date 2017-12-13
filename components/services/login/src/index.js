@@ -1,60 +1,40 @@
 const config = require('./config');
 
-const express = require('express');
-const got = require('got');
-var cors = require('cors');
+const express = require('express'),
+    got = require('got'),
+    cors = require('cors'),
+    app = express();
 
-var app = express();
 app.use(express.json());
 app.use(cors());
 
 var getUser = function (username) {
-    return got('http://' + config.get('user-url.uri') + '/user/' + username)
-        .catch(() => {
-            throw {
-                status: 400,
-                payload: {
-                    message: "Could not got user."
-                }
-            }
+    return got('http://' + config.get('user.url') + '/user/' + username)
+        .catch(err => {
+            throw err;
         });
 };
 
 var hashPwd = function (pwd) {
-    return got('http://' + config.get('hasher-url.uri') + '/hasher/sha256/' + pwd)
-        .catch(() => {
-            throw {
-                status: 400,
-                payload: {
-                    message: "Could not hash password."
-                }
-            }
+    return got('http://' + config.get('hasher.url') + '/hasher/sha256/' + pwd)
+        .catch(err => {
+            throw err;
         });
 };
 
 var generateToken = function (username) {
-    return got('http://' + config.get('tokener-url.uri') + '/tokener/create/' + username + '/' + 'darthsidius')
-        .catch(() => {
-            throw {
-                status: 400,
-                payload: {
-                    message: "Could not got user."
-                }
-            }
+    return got('http://' + config.get('tokener.url') + '/tokener/create/' + username + '/' + 'darthsidius')
+        .catch(err => {
+            throw err;
         });
 };
 
 var storeCookie = function (ckName, ckVal) {
-    return got.post('http://' + config.get('baker-url.uri') + '/baker/' + ckName + '/' + ckVal)
-        .catch(() => {
-            throw {
-                status: 400,
-                payload: {
-                    message: "Could not create cookie."
-                }
-            }
+    return got.post('http://' + config.get('baker.url') + '/baker/' + ckName + '/' + ckVal)
+        .catch(err => {
+            throw err;
         });
-}
+};
 
 app.post('/login/:username/:passwd', function (req, res) {
     var username = req.params.username,
@@ -78,14 +58,11 @@ app.post('/login/:username/:passwd', function (req, res) {
                         generateToken(username, passwd)
                             .then(token => {
                                 token = JSON.parse(token.body).token;
-                                storeCookie("_ujwt", token)
-                                    .then(resp => {
-                                        res.setHeader('set-cookie', resp.headers["set-cookie"]);
-                                        res.status(200).json({ status: 1, message: "Login succesful." });
-                                    })
-                                    .catch(err => {
-                                        throw err;
-                                    });
+                                return storeCookie("_ujwt", token)
+                            })
+                            .then(resp => {
+                                res.setHeader('set-cookie', resp.headers["set-cookie"]);
+                                res.status(200).json({ status: 1, message: "Login succesful." });
                             })
                             .catch(err => {
                                 throw err;
@@ -93,14 +70,15 @@ app.post('/login/:username/:passwd', function (req, res) {
                     } else {
                         res.status(200)
                             .json({ status: 0, message: "Invalid Password." })
-                    }
+                    };
                 })
                 .catch(err => {
                     throw err;
                 });
         })
         .catch(err => {
-            throw err;
+            res.status(404)
+                .json(err.message);
         });
 });
 

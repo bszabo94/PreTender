@@ -1,11 +1,11 @@
 const config = require('./config');
 
-const express = require('express');
-const got = require('got');
-var mongoClient = require('mongodb');
-var cors = require('cors');
+const express = require('express'),
+    got = require('got'),
+    mongoClient = require('mongodb'),
+    cors = require('cors'),
+    app = express();
 
-var app = express();
 app.use(express.json());
 app.use(cors());
 
@@ -31,48 +31,30 @@ var newUser =
             }
         },
         "tenders": []
-
     };
 
 var checkUsernameUnique = function (username) {
-    return got('http://' + config.get('user-url.uri') + '/user/' + username)
+    return got('http://' + config.get('user.url') + '/user/' + username)
         .then(res => {
-            if (JSON.parse(res.body) != null) {
-                return true;
-            } else {
-                return false;
-            }
+            return JSON.parse(res.body) != null;
         })
         .catch(err => {
-            console.log(err);
-            throw {
-                status: 404,
-                payload: {
-                    message: "Could not retrieve user information."
-                }
-            };
+            throw err;
         });
 };
 
 var hashSha256 = function (text) {
-    return got('http://' + config.get('hasher-url.uri') + '/hasher/sha256/' + text)
+    return got('http://' + config.get('hasher.url') + '/hasher/sha256/' + text)
         .then(res => {
             return res.body;
         })
         .catch(err => {
-            console.log(err);
-            throw {
-                status: 404,
-                payload: {
-                    message: "Could not retrieve hashed text."
-                }
-            };
+            throw err;
         });
 }
 
 app.post('/reguser', function (req, res) {
-
-    var dbToClose;
+    var dataBase;
 
     checkUsernameUnique(req.body.username)
         .then(userExists => {
@@ -85,28 +67,27 @@ app.post('/reguser', function (req, res) {
                         newUser.password = hashedPW.substr(1, hashedPW.length - 2);
                         mongoClient.connect(config.get('database.url'))
                             .then(db => {
-                                dbToClose = db;
-                                return db.collection('users');
-                            })
-                            .then(coll => {
-                                return coll.insertOne(newUser);
+                                dataBase = db;
+                                return db.collection('users').insertOne(newUser);
                             })
                             .then(insertResult => {
                                 var ir = JSON.parse(insertResult);
-                                dbToClose.close();
+                                dataBase.close();
 
                                 if (ir.ok == 1) {
-                                    res.status(200).json(ir);
+                                    res.status(200)
+                                        .json(ir);
                                 } else {
-                                    res.status(400).json(ir);
+                                    res.status(404)
+                                        .json(ir);
                                 }
                             })
                             .catch(err => {
-                                res.status(400).json(err.payload.message);
+                                throw err;
                             });
                     })
                     .catch(err => {
-                        res.status(400).json(err.payload.message);
+                        throw err;
                     });
             } else {
                 res.status(200)
@@ -114,7 +95,8 @@ app.post('/reguser', function (req, res) {
             }
         })
         .catch(err => {
-            res.status(400).json(err.payload.message);
+            res.status(404)
+                .json(err.message);
         });
 });
 

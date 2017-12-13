@@ -1,12 +1,12 @@
 const config = require('./config');
 
-const express = require('express');
-const got = require('got');
-var cors = require('cors');
-var mongoClient = require('mongodb'),
-    oid = require('mongodb').ObjectId;
+const express = require('express'),
+    got = require('got'),
+    cors = require('cors'),
+    mongoClient = require('mongodb'),
+    oid = require('mongodb').ObjectId,
+    app = express();
 
-var app = express();
 app.use(express.json());
 app.use(cors());
 
@@ -23,30 +23,30 @@ var validate = function (pattern, data) {
 
 app.get('/validateapplication/:id', function (req, res) {
     var query = { '_id': new oid(req.params.id) },
-        application, tenderType, dbToClose;
+        application, tenderType, dataBase;
     mongoClient.connect(config.get('database.url'))
         .then(db => {
-            dbToClose = db;
+            dataBase = db;
             return db.collection('applications').findOne(query);
         })
         .then(result => {
             application = result;
             var query = { _id: application.tendertype };
-            return dbToClose.collection('tenderTypes').findOne(query);
+            return dataBase.collection('tenderTypes').findOne(query);
         })
         .then(result => {
             tenderType = result;
             return validate(tenderType.requirements, application.data);
         })
         .then(isValid => {
-            dbToClose.close();
+            dataBase.close();
             res.status(200)
                 .json({ valid: isValid });
         })
         .catch(err => {
-            console.log(err);
-            dbToClose.close();
-            res.status(400).json(err.message);
+            dataBase.close();
+            res.status(404)
+                .json(err.message);
         });
 });
 

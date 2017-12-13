@@ -4,8 +4,7 @@ const config = convict({
     port: {
         doc: "The service will listen on this port.",
         format: 'port',
-        default: '9011',
-        ENV: 'TOKENER_PORT'
+        default: '9011'
     }
 });
 

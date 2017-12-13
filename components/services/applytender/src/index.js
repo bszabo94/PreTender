@@ -18,82 +18,47 @@ var newApplication = {
 };
 
 var checkUserExists = function (username) {
-    return got('http://' + config.get('user-url.uri') + '/user/' + username)
+    return got('http://' + config.get('user.url') + '/user/' + username)
         .then(resp => {
-
-            if (JSON.parse(resp.body) != null) {
-                return true;
-            } else {
-                return false;
-            }
+            return JSON.parse(resp.body) != null;
         })
-        .catch(() => {
-            throw {
-                status: 400,
-                payload: {
-                    message: "Could not use user-exist service."
-                }
-            }
+        .catch(err => {
+            throw err;
         });
 };
 
 var getTenderType = function (type) {
-    return got('http://' + config.get('tender-type-url.uri') + '/tendertype', { headers: { 'type': type } })
-        .catch(() => {
-            throw {
-                status: 400,
-                payload: {
-                    message: "Could not retrieve tender-type."
-                }
-            }
+    return got('http://' + config.get('tender-type.url') + '/tendertype', { headers: { 'type': type } })
+        .catch(err => {
+            throw err;
         });
 };
 
 var getTenderTypeByID = function (id) {
-    return got('http://' + config.get('tender-type-url.uri') + '/tendertype/' + id)
-        .catch(() => {
-            throw {
-                status: 400,
-                payload: {
-                    message: "Could not retrieve tender-type."
-                }
-            }
+    return got('http://' + config.get('tender-type.url') + '/tendertype/' + id)
+        .catch(err => {
+            throw err;
         });
 };
 
 var getIssuedtender = function (id) {
-    return got('http://' + config.get('issued-tender-url.uri') + '/issuedtender/' + id)
-        .catch(() => {
-            throw {
-                status: 400,
-                payload: {
-                    message: "Could not retrieve issued tender."
-                }
-            }
+    return got('http://' + config.get('issued-tender.url') + '/issuedtender/' + id)
+        .catch(err => {
+            throw err;
         });
 };
 
 var modUser = function (username, query) {
-    return got.post('http://' + config.get('user-url.uri') + '/user/' + username, { json: true, body: query })
+    return got.post('http://' + config.get('user.url') + '/user/' + username, { json: true, body: query })
         .catch(err => {
-            throw {
-                status: 400,
-                payload: {
-                    message: "Could not modify user properlyr."
-                }
-            }
+            throw err;
         });
 };
 
 var saveApplication = function (application) {
-    return got.post('http://' + config.get('save-application-url.uri') + '/saveapplication', { json: true, body: application })
+    return got.post('http://' + config.get('save-application.url') + '/saveapplication', { json: true, body: application })
         .catch(err => {
-            throw {
-                status: 400,
-                payload: {
-                    message: "Could not save application."
-                }
-            }
+            throw err;
         });
 };
 
@@ -108,20 +73,23 @@ app.post('/applytender/:username/:issuedtenderid', function (req, res) {
                     .then(it => {
                         it = JSON.parse(it.body);
                         if (it == null) {
-                            res.status(400).json("Issued Tender not found.");
+                            res.status(404)
+                                .json("Issued Tender not found.");
+                            return;
                         }
                         getTenderType(it.type)
                             .then(tt => {
                                 tt = JSON.parse(tt.body);
                                 if (it == null) {
-                                    res.status(400).json("Tender Type not found.");
+                                    res.status(404)
+                                        .json("Tender Type not found.");
+                                    return;
                                 }
 
                                 newApplication.user = username;
                                 newApplication.referenceID = issuedtenderid;
                                 newApplication.tendertype = tt['_id'];
-                                var date = new Date()
-                                newApplication.lastedited = date.toISOString();
+                                newApplication.lastedited = (new Date()).toISOString();
 
                                 var data = {
                                     firstname: "",
@@ -137,55 +105,43 @@ app.post('/applytender/:username/:issuedtenderid', function (req, res) {
                                 newApplication = newApplication;
                                 saveApplication(newApplication)
                                     .then(result => {
-
-                                        var appID = result.body.insertedId;
-
-                                        var query = {
-                                            $push: {
-                                                tenders: appID
-                                            }
-                                        };
-                                        modUser(username, query)
-                                            .then(result => {
-                                                if (result.body.nModified == 1) {
-                                                    res.status(200)
-                                                        .json({ status: 1, message: "Tender succesfully applied." });
-                                                } else {
-                                                    res.status(400)
-                                                        .json("Something went wrong. Apply unsuccesful.");
+                                        var appID = result.body.insertedId,
+                                            query = {
+                                                $push: {
+                                                    tenders: appID
                                                 }
-                                            })
-                                            .catch(err => {
-                                                res.status(400)
-                                                    .json(err.message);
-                                            });
+                                            };
+                                        return modUser(username, query)
+                                    })
+                                    .then(result => {
+                                        if (result.body.nModified == 1) {
+                                            res.status(200)
+                                                .json({ status: 1, message: "Tender succesfully applied." });
+                                        } else {
+                                            res.status(404)
+                                                .json({ status: 0, message: "Something went wrong. Apply unsuccesful." });
+                                        }
                                     })
                                     .catch(err => {
-                                        res.status(400)
-                                            .json(err.message);
+                                        throw err;
                                     });
                             })
                             .catch(err => {
-                                res.status(400)
-                                    .json(err.message);
+                                throw err;
                             });
-
                     })
                     .catch(err => {
-                        res.status(400)
-                            .json(err.message);
+                        throw err;
                     });
             } else {
-                res.status(400)
-                    .json("Invalid username for apply tender.");
+                res.status(404)
+                    .json("User not found. Cannot apply for tender.");
             }
         })
-        .catch(() => {
-            res.status(400)
-                .json("Could not check user existence.");
+        .catch(err => {
+            res.status(404)
+                .json(err.message);
         });
-
-
 });
 
 app.listen(config.get('port'));

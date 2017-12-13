@@ -4,39 +4,34 @@ const config = convict({
     port: {
         doc: "The service will listen on this port.",
         format: 'port',
-        default: '9033',
-        ENV: 'APPLY_TENDER_PORT'
+        default: '9033'
     },
-    'user-url': {
-        uri: {
+    'user': {
+        url: {
             doc: 'The URI to the User Entity Service.',
             format: String,
-            default: 'localhost:9002',
-            env: 'APPLY_TENDER_USER_URI'
+            default: 'localhost:9002'
         }
     },
-    'tender-type-url': {
-        uri: {
-            doc: 'The URI to the Tender Entity Service.',
+    'tender-type': {
+        url: {
+            doc: 'The URI to the Tender Type Entity Service.',
             format: String,
-            default: 'localhost:9003',
-            env: 'APPLY_TENDER_TENDER_TYPE_URI'
+            default: 'localhost:9003'
         }
     },
-    'issued-tender-url': {
-        uri: {
-            doc: 'The URI to the Tender Entity Service.',
+    'issued-tender': {
+        url: {
+            doc: 'The URI to the Issued Tender Entity Service.',
             format: String,
-            default: 'localhost:9004',
-            env: 'APPLY_TENDER_ISSUED_TENDER_URI'
+            default: 'localhost:9004'
         }
     },
-    'save-application-url': {
-        uri: {
+    'save-application': {
+        url: {
             doc: 'The URI to the Save Application Microservice.',
             format: String,
-            default: 'localhost:9012',
-            env: 'APPLY_TENDER_SAVE_APPLICATION_URI'
+            default: 'localhost:9012'
         }
     }
 });

@@ -6,15 +6,15 @@ const config = convict({
         format: 'port',
         default: '9032'
     },
-    'tokener-url': {
-        uri: {
+    'tokener': {
+        url: {
             doc: 'The URI to the Tokener Microservice.',
             format: String,
             default: 'localhost:9011'
         }
     },
-    'user-url': {
-        uri: {
+    'user': {
+        url: {
             doc: 'The URI to the User Entity Service.',
             format: String,
             default: 'localhost:9002'

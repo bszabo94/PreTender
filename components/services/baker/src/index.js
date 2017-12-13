@@ -1,9 +1,9 @@
-const config = require('./config');
-const express = require('express');
-const cookieParser = require('cookie-parser');
-var cors = require('cors');
+const config = require('./config'),
+    express = require('express'),
+    cookieParser = require('cookie-parser'),
+    cors = require('cors'),
+    app = express();
 
-var app = express();
 app.use(express.json());
 app.use(cors());
 app.use(cookieParser('darth plagueis'));
@@ -20,11 +20,11 @@ app.get('/baker/:name', function (req, res) {
 });
 
 app.post('/baker/:name/:value', function (req, res) {
-    var options = {
+    const options = {
         maxAge: 1000 * 60 * 60 * 24,
         httpOnly: true,
         signed: true
-    }
+    };
 
     res.cookie(req.params.name, req.params.value, options)
         .status(200)

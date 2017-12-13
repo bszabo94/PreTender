@@ -1,17 +1,17 @@
 const config = require('./config');
 
-const express = require('express');
-const got = require('got');
-var cors = require('cors');
-var mongoClient = require('mongodb'),
-    oid = require('mongodb').ObjectId;
+const express = require('express'),
+    got = require('got'),
+    cors = require('cors'),
+    mongoClient = require('mongodb'),
+    oid = require('mongodb').ObjectId,
+    app = express();
 
-var app = express();
 app.use(express.json());
 app.use(cors());
 
 var validateApplication = function (id) {
-    return got('http://' + config.get('validate-application-url.uri') + '/validateapplication/' + id)
+    return got('http://' + config.get('validate-application.url') + '/validateapplication/' + id)
         .then(response => {
             return response.body;
         })
@@ -21,14 +21,14 @@ var validateApplication = function (id) {
 };
 
 var modifyApplication = function (id, query) {
-    return got.post('http://' + config.get('application-url.uri') + '/application/' + id, { json: true, body: query })
+    return got.post('http://' + config.get('application.url') + '/application/' + id, { json: true, body: query })
         .then(response => {
             return response.body;
         })
         .catch(err => {
             throw err;
         });
-}
+};
 
 app.post('/finalizeapplication/:id', function (req, res) {
     var id = req.params.id,
@@ -43,7 +43,6 @@ app.post('/finalizeapplication/:id', function (req, res) {
                 var query = { $set: { finalized: 1 } };
                 modifyApplication(id, query)
                     .then(response => {
-                        console.log(response);
                         res.status(200)
                             .json(response);
                     })
@@ -52,8 +51,7 @@ app.post('/finalizeapplication/:id', function (req, res) {
                     });
             };
         }).catch(err => {
-            console.log(err);
-            res.status(400)
+            res.status(404)
                 .json(err.message);
         });
 });
