@@ -11,24 +11,22 @@ app.use(express.json());
 app.use(cors());
 
 app.get('/application/:id', function (req, res) {
-    var query = { '_id': new oid(req.params.id) }, dbToClose;
+    var query = { '_id': new oid(req.params.id) }, dataBase;
     mongoClient.connect(config.get('database.url'))
         .then(db => {
-            dbToClose = db;
-            return db.collection('applications');
-        })
-        .then(coll => {
-            console.log(query);
-            return coll.findOne(query);
+            dataBase = db;
+            return db.collection('applications').findOne(query);
         })
         .then(result => {
-            dbToClose.close();
-            res.status(200).json(result);
+            dataBase.close();
+            res.status(200)
+                .json(result);
         })
         .catch(err => {
-            console.log(err);
-            dbToClose.close();
-            res.status(400).json(err.message);
+            console.error(err);
+            dataBase.close();
+            res.status(404)
+                .json(err.message);
         });
 });
 
@@ -36,53 +34,49 @@ app.post('/application/:id', function (req, res) {
     var id = new oid(req.params.id);
     var filter = { '_id': id },
         query = req.body,
-        dbToClose;
+        dataBase;
 
     mongoClient.connect(config.get('database.url'))
         .then(db => {
-            dbToClose = db;
-            return db.collection('applications');
-        })
-        .then(coll => {
-            return coll.updateOne(filter, query);
+            dataBase = db;
+            return db.collection('applications').updateOne(filter, query);
         })
         .then(result => {
-            dbToClose.close();
-            res.status(200).json(result);
+            dataBase.close();
+            res.status(200)
+                .json(result);
         })
         .catch(err => {
-            console.log(err);
-            dbToClose.close();
-            res.status(400).json(err.message);
+            console.error(err);
+            dataBase.close();
+            res.status(400)
+                .json(err.message);
         });
 });
 
 app.delete('/application/:id', function (req, res) {
     var id = new oid(req.params.id);
-    var query = { '_id': id }, dbToClose, user;
+    var query = { '_id': id }, dataBase, user;
 
     mongoClient.connect(config.get('database.url'))
         .then(db => {
-            dbToClose = db;
-            return db.collection('applications');
-        })
-        .then(coll => {
-            return coll.findOne(query);
+            dataBase = db;
+            return db.collection('applications').findOne(query);
         })
         .then(result => {
             user = result.user;
-            dbToClose.collection('users').updateOne({ username: user }, { $pull: { tenders: id } });
-            return dbToClose.collection('applications').deleteOne(query);
+            dataBase.collection('users').updateOne({ username: user }, { $pull: { tenders: id } });
+            return dataBase.collection('applications').deleteOne(query);
         })
         .then(result => {
-            dbToClose.close();
+            dataBase.close();
             res.status(200)
                 .json(result);
         })
         .catch(err => {
-            dbToClose.close();
-            // console.error(err);
-            res.status(400)
+            dataBase.close();
+            console.error(err);
+            res.status(404)
                 .json(err.message);
         });
 });
