@@ -4,4 +4,4 @@ PreTender is a web application to handle the management and application for vari
 
 The project is focused on Service Oriented Architecture, and written entirely in JavaScript.
 
-For further information see the figures of architecture, and notes of design in the [documentation folder](PreTender/tree/master/doc).
+For further information see the figures of architecture, and notes of design in the [documentation folder](/doc).
