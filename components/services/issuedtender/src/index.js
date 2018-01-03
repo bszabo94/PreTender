@@ -36,7 +36,7 @@ app.get('/issuedtender', function (req, res) {
     mongoClient.connect(config.get('database.url'))
         .then(db => {
             dataBase = db;
-            return db.collection('issuedTenders').find({});
+            return db.collection('issuedTenders').find({}).toArray();
         })
         .then(result => {
             dataBase.close();
