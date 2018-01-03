@@ -1,7 +1,7 @@
 {
-  "name": "@pretender/authenticate",
+  "name": "@pretender/authorization",
   "version": "1.0.0",
-  "description": "Authentication task service.",
+  "description": "Authorization task service.",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
